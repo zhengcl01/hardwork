@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CC运动</title>
+<script type='text/javascript' src='/site/public/static/js/jquery-3.3.1.min.js'></script>
+<link rel="stylesheet" href="/site/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css" >
+<script src="/site/public/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
+
+<script type='text/javascript'>
+$(document).ready(
+    function(){  
+        $("#btn_login1").click(function(){    
+            var $formData = $("#f_login").serialize();   //serialize() 方法通过序列化表单值，创建 URL 编码文本字符串,这个是jquery提供的方法    
+            $.ajax({    
+                type:"post",  
+                cache: false,      
+                url:"{:url('index/index/logincheck')}",
+                data:$formData      //这里data传递过去的是序列化以后的字符串    
+            }).done(function($msg){alert( $msg );})
+              .fail(function() {alert( "error" );});
+        });
+    }  
+);
+
+</script>
+</head>
+
+
+<body>
+
+
+<div id="dia_login" class="dia_login">  
+    <form method="POST" name="f_login" id="f_login" action=""> 
+        <input id="t_name" class="t_login" type="text" name="username" placeholder="用户名" onblur="checkNameIpt(this.value)"><br>
+        <input id="t_pass" class="t_login" type="password" name="userpass" placeholder="密码"><br>
+        <p id="loginTips" style="margin-left:12px;text-align:left;color:red;font-size:10px" hidden>请先登录或注册！</p>
+        <p id="errNameIpt" class="errIpt"></p> 
+        <input id="btn_login1"  name="btn_login" value="登录"  type="button" >  <span id="loginresult"></span><br>
+        <input id="btn_login2"  name="btn_login" value="登录2"  type="submit" >  <span id="loginresult1"></span>
+    </form>
+</div>  <!-- dia_login -->
+
+    
+    
+
+
+    <div id="footer" >
+        <b>网站版权&copyCopyRight 2016</b>
+    </div>
+</div> <!-- container -->
+</body>
+</html>
