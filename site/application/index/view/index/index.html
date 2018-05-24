@@ -1,28 +1,141 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CC运动</title>
-<script type='text/javascript' src='/site/public/static/js/jquery-3.3.1.min.js'></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="/site/public/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script-->
+
 <link rel="stylesheet" href="/site/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css" >
+<script type='text/javascript' src='/site/public/static/js/jquery-3.3.1.min.js'></script>
 <script src="/site/public/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="/site/public/static/js/sha1.js"></script>
+
+<title>CC运动</title>
+
 
 
 <script type='text/javascript'>
 $(document).ready(
-    function(){  
-        $("#btn_login1").click(function(){    
-            var $formData = $("#f_login").serialize();   //serialize() 方法通过序列化表单值，创建 URL 编码文本字符串,这个是jquery提供的方法    
+    function(){
+        var $loginStatus= [false, false, false];
+        var $inputId = ["#t_name","#t_pass","#t_capcode"];
+        function fail($obj,$seq,$msg){
+            $obj.parent().parent().removeClass('has-success').addClass('has-error');
+            $('.glyphicon-remove').eq($seq).show();
+            $('.glyphicon-ok').eq($seq).hide();
+            $('.tips').eq($seq).text($msg).show();
+        }
+        function success($obj,$seq){
+            $obj.parent().parent().removeClass('has-error').addClass('has-success');
+            $('.tips').eq($seq).hide();
+            $('.glyphicon-ok').eq($seq).show();
+            $('.glyphicon-remove').eq($seq).hide();
+        }
+        $("#btn_login1").click(function(){
+            for (var $i=0;$i<3;$i++){
+                if (!$loginStatus[$i]){
+                    $($inputId[$i]).focus();
+                    //return;
+                }
+            }
+            $username = $("#t_name").val();
+            // $userpass = $("#t_pass").val();
+            $salt = hex_sha1(hex_sha1(hex_sha1($username)+$("#t_pass").val())+"mycc");
+            var $formData = $("#f_login").serialize();   //serialize() 方法通过序列化表单值，创建 URL 编码文本字符串,这个是jquery提供的方法   
+            var $myjson="{username:"+$username+",userpass:"+$salt+"}";
+            
+            //alert("自定义2："+$myjson);
+            //alert("序列化："+$formData);
+            $obj = $(this);
             $.ajax({    
                 type:"post",  
                 cache: false,      
                 url:"{:url('index/index/logincheck')}",
-                data:$formData      //这里data传递过去的是序列化以后的字符串    
-            }).done(function($msg){alert( $msg );})
-              .fail(function() {alert( "error" );});
+                data: {username:$username,userpass:$salt}      //这里data传递过去的是序列化以后的字符串    
+            }).done(function($msg){if ($msg=="N")
+                                       $('.tips').eq(3).text("密码错误！").show();
+                                   else if ($msg=="Y")
+                                       $(location).attr('href','index/index/manageindex')
+                                  })
+              .fail(function() {$('.tips').eq(3).text("远程方法错误！").show();});/**/
         });
+        $("#t_name").change(
+            function(){
+                var $patrn=new RegExp(/^[a-zA-Z]{1}(\w){4,20}$/); // 用户名是字母开头，可包含字母数字和下划线，并且长度5位以上，20位以下
+                var $username = $("#t_name").val();
+                
+	            if(!$patrn.exec($username)){
+                    // alert($username);
+                    fail($(this),0,"用户名格式错误！");
+                    $loginStatus[0]=false;
+	            }
+	            else{
+                    //success($(this),0);
+                    //alert('ok');
+                    $obj=$(this);
+                    $.ajax({    
+                    type:"post",  
+                    cache: false,      
+                    url:"{:url('/index/index/namecheck')}",
+                    data:{username:$username}       //这里data传递过去的是序列化以后的字符串    
+                    }).done(function($msg){
+                                if ($msg=="Y"){success($obj,0);
+                                               $loginStatus[0]=true;}
+                                else {fail($obj,0,"用户不存在！");
+                                      $loginStatus[0]=false;}
+                            })
+                      .fail(function() { fail($obj,0,"远程方法错误！");
+                                         $loginStatus[0]=false;});
+                }
+            }
+        );
+        $("#t_pass").change(
+            function(){
+                var $patrn      = new RegExp(/^[0-9a-zA-Z!@#_$%]{6,20}$/); // 6-20位密码
+                var $patrn_num  = new RegExp(/^[0-9]+$/); // 纯数字 
+                var $patrn_char  = new RegExp(/^[a-zA-Z]+$/); //  纯字符  
+                var $patrn_sp  = new RegExp(/^[!@#_$%]+$/); //  纯特殊符号
+                var $userpass = $("#t_pass").val();
+                if ($patrn.exec($userpass) && !($patrn_num.exec($userpass) || $patrn_char.exec($userpass) || $patrn_sp.exec($userpass))){
+                    success($(this),1);
+                    $loginStatus[1]=true;
+                }else{
+                    fail($(this),1,"密码格式不正确");
+                    $loginStatus[1]=false;
+                }
+                
+
+            }
+        );
+        $("#t_capcode").change(
+            function(){
+                var $capcode = $("#t_capcode").val();
+                $obj = $(this);
+                if ($capcode.length==5){
+                    $.ajax({    
+                    type:"post",  
+                    cache: false,      
+                    url:"{:url('index/index/captcha_check1')}",
+                    data:{ capcode: $capcode }       //     
+                    }).done(function($msg){
+                                if ($msg=="Y"){success($obj,2); $loginStatus[2]=true;}
+                                else {fail($obj,2,"验证码错误!");$loginStatus[2]=false;}
+                            })
+                      .fail(function() {fail($obj,2,"远程方法错误！");
+                                        $loginStatus[2]=false;});
+                }else{
+                    fail($obj,2,"验证码错误!");
+                    $loginStatus[2]=false;
+                }
+            }
+        );
+        $("#img_cap").click(
+            function(){
+                $("#img_cap").attr("src","{:captcha_src()}?seed="+Math.random());   // 有些浏览器需要变更url才会真正发送请求
+            }
+        );
     }  
 );
 
@@ -33,24 +146,74 @@ $(document).ready(
 <body>
 
 
-<div id="dia_login" class="dia_login">  
+<!--div id="dia_login" class="dia_login">  
     <form method="POST" name="f_login" id="f_login" action=""> 
-        <input id="t_name" class="t_login" type="text" name="username" placeholder="用户名" onblur="checkNameIpt(this.value)"><br>
-        <input id="t_pass" class="t_login" type="password" name="userpass" placeholder="密码"><br>
-        <p id="loginTips" style="margin-left:12px;text-align:left;color:red;font-size:10px" hidden>请先登录或注册！</p>
-        <p id="errNameIpt" class="errIpt"></p> 
-        <input id="btn_login1"  name="btn_login" value="登录"  type="button" >  <span id="loginresult"></span><br>
-        <input id="btn_login2"  name="btn_login" value="登录2"  type="submit" >  <span id="loginresult1"></span>
+        <input id="t_name" class="t_login" type="text" name="username" placeholder="用户名"  >
+            <span id="nameresult" style="display:none"></span> <br>
+        <input id="t_pass" class="t_login" type="password" name="userpass" placeholder="密码">
+            <span id="passresult" style="display:none"></span> <br>
+        <div><input id="t_capcode" class="t_capcode" type="text" name="capcode" placeholder="验证码"  ><img id="img_cap" src="{:captcha_src()}" alt="captcha" />
+             <span id="capcoderesult" style="display:none"></span>
+        </div>
+        <input id="btn_login1"  name="btn_login" value="登录"  type="button" >  <span id="loginresult" style="display:none">登陆密码错误，请重试</span> <br>
     </form>
 </div>  <!-- dia_login -->
 
-    
-    
+<div class="container-fluid">
+
+	<div class="row-fluid col-sm-4 col-sm-offset-4" style="padding-top:5%;" >
+
+            
+            <form class="form-horizontal  " role="form">
+              <div class="form-group has-feedback">
+                <!--label for="firstname" class="control-label">用户名：</label-->
+                <div class="input-group ">
+                  <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                  <input type="text" class="form-control input-lg "  id="t_name"  placeholder="请输入用户名" autofocus>
+                </div>
+                <span style="color:red;display: none;" class="tips"></span>
+                <span style="display: none;" class=" glyphicon glyphicon-remove form-control-feedback"></span>
+                <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+              </div>
+              
+              
+              <div class="form-group has-feedback">
+                <!--label for="lastname" class="col-sm-4 control-label">密码：</label-->
+                <div class="input-group ">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                  <input type="password" class="form-control input-lg" id="t_pass" placeholder="请输入密码">
+                </div>
+                <span style="color:red;display: none;" class="tips"></span>
+                <span style="display: none;" class=" glyphicon glyphicon-remove form-control-feedback"></span>
+                <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span>
+              </div>
+              
+              
+              
+              <div class="form-group has-feedback">
+                <!--label for="lastname" class="col-sm-4 control-label">验证码：</label-->
+                <div class="input-group ">
+                  <span class="input-group-addon"><span class="glyphicon glyphicon-qrcode"></span></span>
+                  <input type="text" class="form-control input-lg" id="t_capcode" placeholder="请输入验证码">
+                  <span class="input-group-addon"><img    id="img_cap" src="{:captcha_src()}" alt="captcha" /></span>
+                </div>
+                
+                <span style="color:red;display: none;" class="tips"></span>
+                <!--span style="display: none;" class=" glyphicon glyphicon-remove form-control-feedback"></span>
+                <span style="display: none;" class="glyphicon glyphicon-ok form-control-feedback"></span-->
+              </div>
+              
+              <div class="form-group">
+                <div class="">
+                  <button type="button" id="btn_login1" class="form-control btn btn-primary btn-block input-lg">登录</button>
+                </div>
+                <span style="color:red;display: none;" class="tips"></span>
+              </div>
+            </form>
+
+	</div>
+</div>
 
 
-    <div id="footer" >
-        <b>网站版权&copyCopyRight 2016</b>
-    </div>
-</div> <!-- container -->
 </body>
 </html>
