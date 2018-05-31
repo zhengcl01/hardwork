@@ -105,8 +105,13 @@ class Index extends Controller
     }
 	public function manageindex()
     {
-        MyTrace::tracelog( 'manageindex');
+        $this->assign('username',Session::get('userid'));
 		return $this->fetch();
+    }
+    public function logout()
+    {
+        Session::clear();
+		return $this->fetch('index');
     }
 	public function menu()
     {

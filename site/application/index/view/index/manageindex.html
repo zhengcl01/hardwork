@@ -3,27 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!--link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://code.jquery.com/jquery.js"></script>
-<script src="/site/public/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script-->
 
 <link rel="stylesheet" href="/site/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css" >
 <script type='text/javascript' src='/site/public/static/js/jquery-3.3.1.min.js'></script>
 <script src="/site/public/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <script src="/site/public/static/js/sha1.js"></script>
 
+<script type='text/javascript'>
+$(document).ready(function(){
+// 设置 iframe 与屏幕等高
+    var $h1 = $(window).height();
+
+    var $h2 = $(".row-fluid").eq(0).height();
+    var $height = $h1-$h2-55;
+    //$(".nav-pills").eq(0).css("height",$height + "px");
+    $("#fourIfm").eq(0).css("height",$height + "px");
+    /*
+        1. 点击父菜单，展开子菜单 --ok
+        2. 设置active属性         --ok
+        3. 清楚当前的active属性   --ok
+        4. 调整父菜单后面的 正负号--ok
+    */
+    function setMenuActive($obj){
+        //alert("第二次："+$(".active").eq(0).text());
+        $(".active").eq(0).removeClass("active");
+        $obj.addClass("active");
+    }
+    $("li").each(function(){
+        $(this).click(function(){
+            // 设置菜单样式
+            $c2=$(this).find("span");
+            if ($c2.hasClass("glyphicon-plus")){
+                $c2.removeClass("glyphicon-plus");
+                $c2.addClass("glyphicon-minus");
+            }else if($c2.hasClass("glyphicon-minus")){
+                $c2.removeClass("glyphicon-minus");
+                $c2.addClass("glyphicon-plus");
+            }
+            setMenuActive($(this));
+            
+            // 通过菜单跳转
+            $tag_a_id=$(this).find("a").eq(0).attr("ID");
+            if ($tag_a_id!=""){
+                $("#fourIfm").attr("src", $tag_a_id)
+            }
+                
+            
+        });
+    });
+    
+}); 
+</script>
+
 <title>CC运动</title>
 
 
 </head>
+<body style="min-width:900px;overflow: hidden;">
+
+<div class="container-fluid">
+
+        <div class="row-fluid " >
+            <nav class="navbar navbar-default" role="navigation">
+                <ul class="nav navbar-nav navbar-left" style="padding-left:2%">
+                    
+                    <h3>  运动管理平台 </h3>
+                </ul>
+                <ul class="nav navbar-nav navbar-right" style="padding-right:5%">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {$username}
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="logout">退出</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="row-fluid" >
+            <div class="col-sm-2" >
+                <nav class="navbar navbar-default" role="navigation">
+                    
+                    <div class="nav nav-pills nav-stacked">
+                        <a class="navbar-brand" href="#">管理菜单</a>
+                    </div>
+                    <div class="nav nav-pills nav-stacked"  >
+                        <li class="active"><a id="m_main" href="#" >首页</a> </li>
+                        <li ><a class="nav nav-pills nav-stacked " data-toggle="collapse" data-target="#nav21" href="#"> <span id="ttt111" class="glyphicon glyphicon-plus pull-right"></span> 场地管理</a></li>
+                        <ul class="nav nav-pills nav-stacked collapse out" id="nav21" style="padding-left:10%;">
+                            <li ><a id="m_site_manage" href="#">场地信息维护</a></li>
+                            <li ><a id="m_site_manage" href="#">场地预留</a></li>
+                        </ul>
+                        
+                        <li><a data-toggle="collapse" data-target="#nav31" href="#"> <span class="glyphicon glyphicon-plus pull-right"></span> 会员管理</a></li>
+                        <ul class="nav nav-pills nav-stacked collapse out" id="nav31" style="padding-left:10%;">
+                            <li ><a id="m_member"  href="#"  >新增会员</a></li>
+                            <li ><a id="m_member1" href="#"  >会员充值</a></li>
+                        </ul>
+                        
+                        <li><a data-toggle="collapse" data-target="#nav41" href="#"> <span class="glyphicon glyphicon-plus pull-right"></span> 报表查看</a></li>
+                        <ul class="nav nav-pills nav-stacked collapse out" id="nav41" style="padding-left:10%;">
+                            <li ><a id="m_report" href="#"  >查看当前空场情况</a></li>
+                            <li ><a id="m_report" href="#"  >查看历史交易情况</a></li>
+                            <li ><a id="m_report" href="#"  >对账表</a></li>
+                            <li ><a id="m_report" href="#"  >场馆收入情况</a></li>
+                        </ul>
+                        
+                        <li><a data-toggle="collapse" data-target="#nav51" href="#"> <span class="glyphicon glyphicon-plus pull-right"></span> 系统管理</a></li>
+                        <ul class="nav nav-pills nav-stacked collapse out" id="nav51" style="padding-left:10%;">
+                            <li ><a id="m_system" href="#" >用户权限管理</a></li>
+                            <li ><a id="m_system" href="#" >系统使用情况</a></li>
+                            <li ><a id="m_system" href="#" >操作日志</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            
+            <div class="col-sm-10" >
+                <div id="four" class="tab-pane" >
+                    <iframe id="fourIfm" frameborder="no" border="0" style="width:100%;"  src="m_main"   >
+                    </iframe>          
+                </div>
+            </div>
+        </div>
 
 
 
-
-
-<FRAMESET cols="15%,*">
-<FRAME src="menu">
-<FRAME name="content" src="m_main">
-</FRAMESET> 
-
+        
+    
+    
+    
+    
+</div>
+    
+</body>
 </html>

@@ -1,30 +1,129 @@
-<HTML><HEAD></HEAD>
-<BODY><P><BR>
-<li>
-<A href="m_main"  target="content">首页</A><P>
-</li>
+<!DOCTYPE HTML>
+<html>
+<head>
+<!--  该文件已取消！！！ 
+    2018-5-31
+    zhengcl
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<li><A href="m_site_manage"  target="content">场地管理</A><P>
-<ul><a href="m_site_manage"  target="content">场地信息维护</a></ul>
-<ul><a href="m_site_manage"  target="content">场地预留</a></ul>
-</li>
+<link rel="stylesheet" href="/site/public/static/bootstrap-3.3.7-dist/css/bootstrap.min.css" >
+<script type='text/javascript' src='/site/public/static/js/jquery-3.3.1.min.js'></script>
+<script src="/site/public/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script type='text/javascript'>
+$(document).ready(function(){
+/*
+1. 点击父菜单，展开子菜单 --ok
+2. 设置active属性         --ok
+3. 清楚当前的active属性   --ok
+4. 调整父菜单后面的 正负号--ok
+*/
+    function setMenuActive($obj){
+        //alert("第二次："+$(".active").eq(0).text());
+        $(".active").eq(0).removeClass("active");
+        $obj.addClass("active");
+    }
+    $("li").each(function(){
+        $(this).click(function(){
+            //alert("第一次："+$(this).text());
+            
+            $c2=$(this).find("span");
 
-<li><A href="m_member"  target="content">会员管理</A><P>
-<ul><a href="m_member1"  target="content">新增会员</a></ul>
-<ul><a href="m_member2"  target="content">会员充值</a></ul>
-</li>
+            // alert("第二个子标签的tagname: "+$(this).children("span").attr("ID"));
+            if ($c2.hasClass("glyphicon-plus")){
+                $c2.removeClass("glyphicon-plus");
+                $c2.addClass("glyphicon-minus");
+            }else if($c2.hasClass("glyphicon-minus")){
+                $c2.removeClass("glyphicon-minus");
+                $c2.addClass("glyphicon-plus");
+            }
+            setMenuActive($(this));
+        });
+    });
+    $("#sitemag").click(function(){
+        /*$obj = $("#cdzcd");
+        if ($obj.hasClass("collapse"))
+            $obj.removeClass("collapse");
+        else
+            $obj.addClass("collapse");*/
+    });
+}); 
+</script>
+</HEAD>
+<BODY>
 
-<li><A href="m_report"  target="content">报表查看</A><P>
-<ul><a href="m_report"  target="content">查看当前空场情况</a></ul>
-<ul><a href="m_report"  target="content">查看历史交易情况</a></ul>
-<ul><a href="m_report"  target="content">对账表</a></ul>
-<ul><a href="m_report"  target="content">场馆收入情况</a></ul>
-</li>
+<nav class="navbar navbar-default" role="navigation">
 
-<li><A href="m_system"  target="content">系统管理</A>
-<ul><a href="m_system"  target="content">用户权限管理</a></ul>
-<ul><a href="m_system"  target="content">系统使用情况</a></ul>
-<ul><a href="m_system"  target="content">用操作日志管理</a></ul>
-</li>
+    <div class="container-fluid">
 
+    
+        <div >
+            <div class="panel-heading">
+                <h3 class="panel-title">运动管理平台</h3>
+            </div>
+        </div>
+
+        
+        <div class="nav nav-pills nav-stacked"  >
+            <li class="active"><a href="m_main"  target="content">首页</a> </li>
+            <li ><a class="nav nav-pills nav-stacked " data-toggle="collapse" data-target="#nav21" href="#"> <span id="ttt111" class="glyphicon glyphicon-plus pull-right"></span> 场地管理</a></li>
+            <ul class="nav nav-pills nav-stacked collapse out" id="nav21" style="padding-left:10%;">
+                <li ><a href="m_site_manage" target="content">场地信息维护</a></li>
+                <li ><a href="m_site_manage" target="content">场地预留</a></li>
+            </ul>
+            
+            <li><a class="" data-toggle="collapse" data-target="#nav31" href="#"> <span class="glyphicon glyphicon-plus pull-right"></span> 会员管理</a></li>
+            <ul class="nav nav-pills nav-stacked collapse out" id="nav31" style="padding-left:10%;">
+                <li ><a href="m_member" target="content">新增会员</a></li>
+                <li ><a href="m_member1" target="content">会员充值</a></li>
+            </ul>
+            
+            <li><a class="" data-toggle="collapse" data-target="#nav41" href="#"> <span class="glyphicon glyphicon-plus pull-right"></span> 报表查看</a></li>
+            <ul class="nav nav-pills nav-stacked collapse out" id="nav41" style="padding-left:10%;">
+                <li ><a href="m_report"  target="content">查看当前空场情况</a></li>
+                <li ><a href="m_report"  target="content">查看历史交易情况</a></li>
+                <li ><a href="m_report"  target="content">对账表</a></li>
+                <li ><a href="m_report"  target="content">场馆收入情况</a></li>
+            </ul>
+            
+            <li><a class="" data-toggle="collapse" data-target="#nav51" href="#"> <span class="glyphicon glyphicon-plus pull-right"></span> 系统管理</a></li>
+            <ul class="nav nav-pills nav-stacked collapse out" id="nav51" style="padding-left:10%;">
+                <li ><a href="m_system" target="content">用户权限管理</a></li>
+                <li ><a href="m_system" target="content">系统使用情况</a></li>
+                <li ><a href="m_system" target="content">操作日志</a></li>
+            </ul>
+            
+        </div>
+    </div>
+</nav>
+
+
+
+
+<!--ul class="nav nav-pills nav-stacked">
+    <li><A href="m_main"  target="content">首页</A></li>
+
+    <li><A href="m_site_manage"  target="content">场地管理</A>
+        <ul><a href="m_site_manage"  target="content">场地信息维护</a></ul>
+        <ul><a href="m_site_manage"  target="content">场地预留</a></ul>
+    </li>
+
+    <li><A href="m_member"  target="content">会员管理</A>
+        <ul><a href="m_member1"  target="content">新增会员</a></ul>
+        <ul><a href="m_member2"  target="content">会员充值</a></ul>
+    </li>
+
+    <li><A href="m_report"  target="content">报表查看</A><P>
+        <li><a href="m_report"  target="content">查看当前空场情况</a></li>
+        <li><a href="m_report"  target="content">查看历史交易情况</a></li>
+        <li><a href="m_report"  target="content">对账表</a>          </li>
+        <li><a href="m_report"  target="content">场馆收入情况</a>    </li>
+    </li>
+
+    <li><A href="m_system"  target="content">系统管理</A>
+        <li><a href="m_system"  target="content">用户权限管理</a>  </li>
+        <li><a href="m_system"  target="content">系统使用情况</a>  </li>
+        <li><a href="m_system"  target="content">用操作日志管理</a></li>
+    </li>
+</ul-->
 </BODY></HTML>
